@@ -1,0 +1,36 @@
+{
+    "dataset_size": 1435,
+    "training_size": 1148,
+    "test_size": 287,
+    "best_model": "Random Forest",
+    "results": [
+        {
+            "model": "Random Forest",
+            "mae": 0.632,
+            "rmse": 0.857,
+            "exact_accuracy": 29.27,
+            "within_half_accuracy": 64.11
+        },
+        {
+            "model": "Linear Regression",
+            "mae": 0.662,
+            "rmse": 0.914,
+            "exact_accuracy": 32.4,
+            "within_half_accuracy": 59.93
+        },
+        {
+            "model": "Linear SVR",
+            "mae": 0.697,
+            "rmse": 0.921,
+            "exact_accuracy": 25.78,
+            "within_half_accuracy": 59.58
+        },
+        {
+            "model": "Ridge Regression",
+            "mae": 0.716,
+            "rmse": 0.92,
+            "exact_accuracy": 21.25,
+            "within_half_accuracy": 59.23
+        }
+    ]
+}
