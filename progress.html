@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Progress</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="container">
+
+    <div class="page-card">
+      <h1>Your Progress</h1>
+      <p class="subtitle">Track your IELTS Writing improvement over time.</p>
+
+      <div class="button-row">
+        <a class="nav-btn" href="/">New Evaluation</a>
+        <a class="nav-btn" href="/history">History</a>
+        <a class="nav-btn logout-btn" href="/logout">Logout</a>
+      </div>
+    </div>
+
+    <div class="score-hero">
+      <div class="score-box">
+        <p class="hero-label">Total Essays</p>
+        <h2>{{ total }}</h2>
+      </div>
+
+      <div class="score-box">
+        <p class="hero-label">Average Score</p>
+        <h2>{{ average }}</h2>
+      </div>
+
+      <div class="score-box final-score">
+        <p class="hero-label">Best Score</p>
+        <h2>{{ best }}</h2>
+      </div>
+    </div>
+
+    <div class="result-card">
+      <h3>Progress Summary</h3>
+      <p>{{ progress_message }}</p>
+
+      <p class="{{ trend_class }}">
+        <strong>{{ trend_message }}</strong>
+      </p>
+
+      <p>
+        Your average final score is <strong>{{ average }}</strong>.
+        Your best final score is <strong>{{ best }}</strong>.
+        Target band score: <strong>{{ target_score }}</strong>.
+      </p>
+    </div>
+
+    <div class="result-card">
+      <h3>Score Progression</h3>
+      <canvas id="progressChart"></canvas>
+    </div>
+
+  </div>
+
+  <script>
+    const scores = {{ scores | tojson }};
+    const targetScore = {{ target_score | tojson }};
+    const labels = scores.map((_, i) => "Essay " + (i + 1));
+
+    const targetLine = scores.map(() => targetScore);
+
+    const ctx = document.getElementById("progressChart").getContext("2d");
+
+    new Chart(ctx, {
+      type: "line",
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: "Final Score",
+            data: scores,
+            fill: false,
+            tension: 0.3,
+            pointRadius: 5
+          },
+          {
+            label: "Target Band 7.0",
+            data: targetLine,
+            fill: false,
+            borderDash: [6, 6],
+            pointRadius: 0
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return context.dataset.label + ": " + context.raw;
+              }
+            }
+          }
+        },
+        scales: {
+          y: {
+            min: 0,
+            max: 9
+          }
+        }
+      }
+    });
+  </script>
+
+</body>
+</html>

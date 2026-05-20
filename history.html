@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>History</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="container">
+    <div class="page-card">
+      <h1>Your Evaluation History</h1>
+      <p class="subtitle">See your previous IELTS writing evaluations.</p>
+
+      <div class="button-row">
+        <a class="nav-btn" href="/">Back to Evaluator</a>
+        <a class="nav-btn" href="/progress">Progress</a>
+        <a class="nav-btn logout-btn" href="/logout">Logout</a>
+      </div>
+    </div>
+
+    {% for item in data %}
+      <div class="result-card">
+        <h3>Evaluation #{{ item[0] }}</h3>
+        <p><strong>Question:</strong> {{ item[1][:180] }}...</p>
+        <p><strong>AI Score:</strong> {{ item[2] }}</p>
+        <p><strong>ML Score:</strong> {{ item[3] }}</p>
+        <p><strong>Final Score:</strong> {{ item[4] }}</p>
+
+        <div class="button-row">
+          <a class="nav-btn" href="/evaluation/{{ item[0] }}">View Details</a>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</body>
+</html>

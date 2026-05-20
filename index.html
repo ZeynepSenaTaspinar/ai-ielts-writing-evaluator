@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>AI IELTS Writing Evaluator</title>
+
+  <link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='style.css') }}"
+  />
+</head>
+
+<body>
+
+  <!-- TOP NAVBAR -->
+  <div class="top-navbar">
+
+    <div class="brand">
+      IELTS AI Evaluator
+    </div>
+
+    <a href="/profile" class="profile-button">
+
+      <span>Profile</span>
+
+      <div class="avatar-circle">
+        {{ user[0][0]|upper }}
+      </div>
+
+    </a>
+
+  </div>
+
+  <div class="container">
+
+    <!-- MAIN INPUT CARD -->
+    <div class="page-card">
+
+      <h1>AI IELTS Writing Evaluator</h1>
+
+      <p class="subtitle">
+        Hybrid IELTS Writing evaluation using AI + ML + penalty system.
+      </p>
+
+      <!-- QUESTION -->
+      <label for="question">
+        IELTS Task 2 Question
+      </label>
+
+      <textarea
+        id="question"
+        placeholder="Paste the IELTS Writing Task 2 question here..."
+      ></textarea>
+
+      <!-- QUESTION SUGGESTION -->
+      <div class="button-row">
+
+        <button
+          type="button"
+          id="suggestBtn"
+          onclick="suggestQuestion()"
+        >
+          Suggest Question
+        </button>
+
+      </div>
+
+      <!-- ESSAY -->
+      <label for="essay">
+        Essay
+      </label>
+
+      <textarea
+        id="essay"
+        placeholder="Write the essay here..."
+      ></textarea>
+
+      <!-- WORD INFO -->
+      <div class="info-row">
+
+        <div id="wordCount" class="info-box">
+          Word Count: 0
+        </div>
+
+        <div id="wordStatus" class="info-box warning">
+          Below 250 words
+        </div>
+
+      </div>
+
+      <!-- MAIN BUTTONS -->
+    
+      <div class="button-row">
+
+    <button id="evaluateBtn" onclick="sendEssay()">
+    Evaluate
+    </button>
+
+  <button
+    id="clearBtn"
+    onclick="clearAll()"
+    type="button"
+  >
+    Clear
+  </button>
+
+  <a class="nav-btn" href="/history">
+    View History
+           </a>
+
+  <a class="nav-btn" href="/progress">
+    Progress
+  </a>
+
+  <a class="nav-btn" href="/research">
+    Research
+  </a>
+
+  <a class="nav-btn logout-btn" href="/logout">
+    Logout
+  </a>
+
+</div>
+
+<div id="errorBox" class="error-box hidden"></div>
+
+</div>
+
+    <!-- RESULT SECTION -->
+    <div id="resultSection" class="hidden">
+
+      <!-- SCORE HERO -->
+      <div class="score-hero">
+
+        <!-- AI SCORE -->
+        <div class="score-box main-score">
+
+          <p class="hero-label">
+            AI Score
+          </p>
+
+          <h2 id="overallBand">-</h2>
+
+        </div>
+
+        <!-- ML SCORE -->
+        <div class="score-box ml-score">
+
+          <p class="hero-label">
+            ML Score
+          </p>
+
+          <h2 id="mlPredictedScore">-</h2>
+
+        </div>
+
+        <!-- FINAL SCORE -->
+        <div class="score-box final-score">
+
+          <p class="hero-label">
+            Final Score
+          </p>
+
+          <h2 id="finalScore">-</h2>
+
+        </div>
+
+        <!-- SCORE DETAILS -->
+        <div class="score-details">
+
+          <div class="mini-stat">
+
+            <span class="mini-label">
+              Exact Word Count
+            </span>
+
+            <span
+              id="exactWordCount"
+              class="mini-value"
+            >
+              -
+            </span>
+
+          </div>
+
+          <div class="mini-stat">
+
+            <span class="mini-label">
+              Word Penalty
+            </span>
+
+            <span
+              id="wordPenalty"
+              class="mini-value"
+            >
+              -
+            </span>
+
+          </div>
+
+          <div class="mini-stat">
+
+            <span class="mini-label">
+              AI / ML Difference
+            </span>
+
+            <span
+              id="scoreDifference"
+              class="mini-value"
+            >
+              -
+            </span>
+
+          </div>
+
+          <div class="mini-stat">
+
+            <span class="mini-label">
+              Confidence
+            </span>
+
+            <span
+              id="confidenceLevel"
+              class="mini-value"
+            >
+              -
+            </span>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- COMPARISON CARD -->
+      <div class="comparison-card">
+      <!-- WRITING ANALYTICS -->
+<div class="result-card">
+  <h3>Writing Analytics</h3>
+
+  <div class="analytics-grid">
+    <div class="analytics-box">
+      <span>Vocabulary Diversity</span>
+      <strong id="vocabularyDiversity">-</strong>
+    </div>
+
+    <div class="analytics-box">
+      <span>Average Sentence Length</span>
+      <strong id="avgSentenceLength">-</strong>
+    </div>
+
+    <div class="analytics-box">
+      <span>Paragraph Count</span>
+      <strong id="paragraphCount">-</strong>
+    </div>
+
+    <div class="analytics-box">
+      <span>Transition Words</span>
+      <strong id="transitionCount">-</strong>
+    </div>
+  </div>
+
+  <h4>Most Repeated Words</h4>
+  <ul id="repeatedWordsList"></ul>
+</div>
+        <h3>AI vs ML Comparison</h3>
+
+        <p>
+          <strong>AI Score:</strong>
+          <span id="aiComparisonScore">-</span>
+        </p>
+
+        <p>
+          <strong>ML Score:</strong>
+          <span id="mlComparisonScore">-</span>
+        </p>
+
+        <p>
+          <strong>Final Score:</strong>
+          <span id="finalComparisonScore">-</span>
+        </p>
+
+        <p>
+          <strong>Interpretation:</strong>
+          <span id="scoreInterpretation">-</span>
+        </p>
+
+      </div>
+
+      <!-- CRITERIA GRID -->
+      <div class="criteria-grid">
+
+        <!-- TASK RESPONSE -->
+        <div class="criterion-card">
+
+          <h3>Task Response</h3>
+
+          <span id="taskResponseBand">-</span>
+
+          <p id="taskResponseText">-</p>
+
+        </div>
+
+        <!-- COHERENCE -->
+        <div class="criterion-card">
+
+          <h3>Coherence and Cohesion</h3>
+
+          <span id="coherenceBand">-</span>
+
+          <p id="coherenceText">-</p>
+
+        </div>
+
+        <!-- LEXICAL -->
+        <div class="criterion-card">
+
+          <h3>Lexical Resource</h3>
+
+          <span id="lexicalBand">-</span>
+
+          <p id="lexicalText">-</p>
+
+        </div>
+
+        <!-- GRAMMAR -->
+        <div class="criterion-card">
+
+          <h3>Grammar</h3>
+
+          <span id="grammarBand">-</span>
+
+          <p id="grammarText">-</p>
+
+        </div>
+
+      </div>
+
+      <!-- STRENGTHS -->
+      <div class="result-card">
+
+        <h3>Main Strengths</h3>
+
+        <ul id="strengthsList"></ul>
+
+      </div>
+
+      <!-- IMPROVEMENTS -->
+      <div class="result-card">
+
+        <h3>Main Improvements</h3>
+
+        <ul id="improvementsList"></ul>
+
+      </div>
+
+      <!-- IMPROVED VERSION -->
+      <div class="result-card">
+
+        <h3>Improved Version</h3>
+
+        <div id="improvedVersion"></div>
+
+      </div>
+
+      <!-- RAW AI RESPONSE -->
+      <div class="result-card">
+
+        <details>
+
+          <summary>
+            <strong>
+              Developer View: Raw AI Response
+            </strong>
+          </summary>
+
+          <pre id="rawResult"></pre>
+
+        </details>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <script
+    src="{{ url_for('static', filename='script.js') }}"
+  ></script>
+
+</body>
+</html>

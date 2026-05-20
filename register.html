@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Register</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="auth-page">
+    <div class="auth-card">
+      <div class="auth-badge">IELTS AI + ML</div>
+
+      <h1>Create Account</h1>
+      <p class="subtitle">Save your essays, track your progress, and set your target band score.</p>
+
+      <form method="POST">
+        <label>Username</label>
+        <input name="username" required placeholder="Choose a username">
+
+        <label>Password</label>
+        <input name="password" type="password" required placeholder="Choose a password">
+
+        <button type="submit">Register</button>
+      </form>
+
+      <p class="auth-footer">
+        Already have an account? <a href="/login">Login</a>
+      </p>
+    </div>
+  </div>
+</body>
+</html>

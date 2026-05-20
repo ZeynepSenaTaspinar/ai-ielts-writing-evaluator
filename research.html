@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Research Metrics</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="container">
+
+    <div class="page-card">
+      <h1>Research & Model Performance</h1>
+      <p class="subtitle">Machine learning model comparison and evaluation results.</p>
+
+      <div class="button-row">
+        <a class="nav-btn" href="/">Evaluator</a>
+        <a class="nav-btn" href="/progress">Progress</a>
+        <a class="nav-btn" href="/history">History</a>
+        <a class="nav-btn logout-btn" href="/logout">Logout</a>
+      </div>
+    </div>
+
+    <div class="score-hero">
+      <div class="score-box">
+        <p class="hero-label">Dataset Size</p>
+        <h2>{{ metrics.dataset_size }}</h2>
+      </div>
+
+      <div class="score-box">
+        <p class="hero-label">Training Samples</p>
+        <h2>{{ metrics.training_size }}</h2>
+      </div>
+
+      <div class="score-box">
+        <p class="hero-label">Test Samples</p>
+        <h2>{{ metrics.test_size }}</h2>
+      </div>
+
+      <div class="score-box final-score">
+        <p class="hero-label">Best Model</p>
+        <h2 style="font-size: 28px;">{{ metrics.best_model }}</h2>
+      </div>
+    </div>
+
+    <div class="result-card">
+      <h3>Model Comparison</h3>
+
+      <table class="research-table">
+        <thead>
+          <tr>
+            <th>Model</th>
+            <th>MAE</th>
+            <th>RMSE</th>
+            <th>Exact Accuracy</th>
+            <th>±0.5 Accuracy</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for item in metrics.results %}
+          <tr>
+            <td>{{ item.model }}</td>
+            <td>{{ item.mae }}</td>
+            <td>{{ item.rmse }}</td>
+            <td>{{ item.exact_accuracy }}%</td>
+            <td>{{ item.within_half_accuracy }}%</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="result-card">
+      <h3>Research Interpretation</h3>
+      <p>
+        The models were trained and evaluated using an 80/20 train-test split.
+        The model with the lowest MAE was selected as the final scoring model
+        and integrated into the IELTS writing evaluation system.
+      </p>
+    </div>
+
+  </div>
+</body>
+</html>

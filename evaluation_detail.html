@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Evaluation Detail</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="container">
+    <div class="page-card">
+      <h1>Evaluation Detail</h1>
+      <p class="subtitle">Detailed view of your saved IELTS writing evaluation.</p>
+
+      <div class="button-row">
+        <a class="nav-btn" href="/history">Back to History</a>
+        <a class="nav-btn" href="/">New Evaluation</a>
+        <a class="nav-btn" href="/progress">Progress</a>
+      </div>
+    </div>
+
+    <div class="score-hero">
+      <div class="score-box">
+        <p class="hero-label">AI Score</p>
+        <h2>{{ item[2] }}</h2>
+      </div>
+
+      <div class="score-box">
+        <p class="hero-label">ML Score</p>
+        <h2>{{ item[3] }}</h2>
+      </div>
+
+      <div class="score-box final-score">
+        <p class="hero-label">Final Score</p>
+        <h2>{{ item[4] }}</h2>
+      </div>
+    </div>
+
+    <div class="result-card">
+      <h3>Question</h3>
+      <p>{{ item[0] }}</p>
+    </div>
+
+    <div class="result-card">
+      <h3>Essay</h3>
+      <div class="formatted-text">{{ item[1] }}</div>
+    </div>
+
+    <div class="result-card">
+      <h3>Full AI Feedback</h3>
+      <pre>{{ item[5] }}</pre>
+    </div>
+  </div>
+</body>
+</html>

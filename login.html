@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Login</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="auth-page">
+    <div class="auth-card">
+      <div class="auth-badge">IELTS AI + ML</div>
+
+      <h1>Welcome Back</h1>
+      <p class="subtitle">Login to continue tracking your IELTS Writing progress.</p>
+
+      <form method="POST">
+        <label>Username</label>
+        <input name="username" required placeholder="Enter your username">
+
+        <label>Password</label>
+        <input name="password" type="password" required placeholder="Enter your password">
+
+        <button type="submit">Login</button>
+      </form>
+
+      <p class="auth-footer">
+        Don’t have an account? <a href="/register">Create one</a>
+      </p>
+    </div>
+  </div>
+</body>
+</html>
