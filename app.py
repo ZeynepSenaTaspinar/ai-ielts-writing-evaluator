@@ -8,6 +8,7 @@ import joblib
 import requests
 from dotenv import load_dotenv
 from flask import Flask, jsonify, redirect, render_template, request, url_for
+from werkzeug.middleware.proxy_fix import ProxyFix
 from flask_login import (
     LoginManager,
     UserMixin,
@@ -22,6 +23,9 @@ load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "dev-only-change-me")
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1)
+app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+app.config["REMEMBER_COOKIE_SAMESITE"] = "Lax"
 
 GROQ_API_KEY = os.environ.get("GROQ_API_KEY", "").strip()
 GROQ_MODEL = os.environ.get("GROQ_MODEL", "openai/gpt-oss-20b")
@@ -194,7 +198,7 @@ def home():
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
-        username = request.form["username"]
+        username = request.form["username"].strip()
         password = generate_password_hash(request.form["password"])
 
         conn = get_db()
@@ -217,8 +221,9 @@ def register():
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
+    error = None
     if request.method == "POST":
-        username = request.form["username"]
+        username = request.form["username"].strip()
         password = request.form["password"]
 
         conn = get_db()
@@ -228,12 +233,19 @@ def login():
         conn.close()
 
         if user and check_password_hash(user[1], password):
-            login_user(User(user[0]))
+            login_user(User(user[0]), remember=True)
+            next_url = request.args.get("next") or request.form.get("next")
+            if next_url and next_url.startswith("/"):
+                return redirect(next_url)
             return redirect(url_for("home"))
 
-        return "Invalid username or password"
+        error = (
+            "Invalid username or password. "
+            "The free server resets accounts on restart — use demo / demo123 "
+            "or create a new account."
+        )
 
-    return render_template("login.html")
+    return render_template("login.html", error=error)
 
 
 @app.route("/logout")
@@ -388,7 +400,6 @@ def progress():
 
 
 @app.route("/research")
-@login_required
 def research():
     with open("model_metrics.json", "r") as f:
         metrics = json.load(f)

@@ -44,6 +44,7 @@
         Research
       </a>
       <div class="nav-divider"></div>
+      {% if current_user.is_authenticated %}
       <a href="/profile" class="nav-item" data-path="/profile">
         <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
         Profile
@@ -52,6 +53,12 @@
         <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
         Logout
       </a>
+      {% else %}
+      <a href="/login" class="nav-item" data-path="/login">
+        <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+        Login
+      </a>
+      {% endif %}
     </nav>
 
     <div class="sidebar-footer">
@@ -59,10 +66,12 @@
         <span class="toggle-icon" id="themeIcon">🌙</span>
         <span id="themeLabel">Dark Mode</span>
       </button>
+      {% if current_user.is_authenticated %}
       <a href="/profile" class="sidebar-user-chip">
         <div class="avatar-sm">{{ nav_initial }}</div>
         <span class="sidebar-username">{{ nav_username }}</span>
       </a>
+      {% endif %}
     </div>
   </aside>
 
