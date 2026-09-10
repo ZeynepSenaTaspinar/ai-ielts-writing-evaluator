@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.env
+venv/
+.venv/
+
+# Database
+database.db
+*.db
+
+# Large model files
+*.safetensors
+*.pt
+*.pth
+ielts_score_model.pkl
+
+# Claude
+.claude/
+
+# macOS
+.DS_Store

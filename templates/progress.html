@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Progress — IELTS AI</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    (function(){
+      var t = localStorage.getItem('theme') || 'light';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+</head>
+<body>
+<div class="app-layout">
+
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-brand-inner">
+        <div class="sidebar-logo">AI</div>
+        <div>
+          <div class="sidebar-brand-text">IELTS AI</div>
+          <div class="sidebar-brand-sub">Writing Evaluator</div>
+        </div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a href="/" class="nav-item" data-path="/">
+        <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        Evaluator
+      </a>
+      <a href="/history" class="nav-item" data-path="/history">
+        <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        History
+      </a>
+      <a href="/progress" class="nav-item" data-path="/progress">
+        <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+        Progress
+      </a>
+      <a href="/research" class="nav-item" data-path="/research">
+        <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2v-4M9 21H5a2 2 0 0 1-2-2v-4m0 0h18"/></svg>
+        Research
+      </a>
+      <div class="nav-divider"></div>
+      <a href="/profile" class="nav-item" data-path="/profile">
+        <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        Profile
+      </a>
+      <a href="/logout" class="nav-item danger">
+        <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Logout
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="dark-toggle" onclick="toggleDark()">
+        <span class="toggle-icon" id="themeIcon">🌙</span>
+        <span id="themeLabel">Dark Mode</span>
+      </button>
+      <a href="/profile" class="sidebar-user-chip">
+        <div class="avatar-sm">{{ nav_username[0]|upper }}</div>
+        <span class="sidebar-username">{{ nav_username }}</span>
+      </a>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <div class="content-inner">
+
+      <div class="page-header">
+        <h1>Your Progress</h1>
+        <p>Track your IELTS Writing improvement over time.</p>
+      </div>
+
+      <div class="score-hero">
+        <div class="score-box">
+          <p class="hero-label">Total Essays</p>
+          <h2>{{ total }}</h2>
+        </div>
+        <div class="score-box">
+          <p class="hero-label">Average Score</p>
+          <h2>{{ average }}</h2>
+        </div>
+        <div class="score-box final-score">
+          <p class="hero-label">Best Score</p>
+          <h2>{{ best }}</h2>
+        </div>
+        <div class="score-details">
+          <div class="mini-stat">
+            <span class="mini-label">Target Band</span>
+            <span class="mini-value">{{ target_score }}</span>
+          </div>
+          <div class="mini-stat">
+            <span class="mini-label">Trend</span>
+            <span class="mini-value">{{ trend_message[:12] if trend_message else '—' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="result-card">
+        <h3>Progress Summary</h3>
+        <p style="color:var(--text-2); font-size:14px; margin-bottom:12px;">{{ progress_message }}</p>
+        <p class="{{ trend_class }}"><strong>{{ trend_message }}</strong></p>
+        <p style="font-size:14px; color:var(--text-2); margin-top:12px;">
+          Average final score: <strong style="color:var(--text);">{{ average }}</strong> &nbsp;·&nbsp;
+          Best score: <strong style="color:var(--text);">{{ best }}</strong> &nbsp;·&nbsp;
+          Target: <strong style="color:var(--accent);">{{ target_score }}</strong>
+        </p>
+      </div>
+
+      <div class="result-card">
+        <h3>Score Progression</h3>
+        <canvas id="progressChart"></canvas>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script>
+  const scores = {{ scores | tojson }};
+  const targetScore = {{ target_score | tojson }};
+  const labels = scores.map((_, i) => "Essay " + (i + 1));
+  const targetLine = scores.map(() => targetScore);
+
+  function getChartColors() {
+    var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+    return {
+      grid: dark ? '#30363d' : '#e2e8f0',
+      text: dark ? '#8b949e' : '#64748b',
+    };
+  }
+
+  var chart;
+  function buildChart() {
+    var c = getChartColors();
+    if (chart) chart.destroy();
+    chart = new Chart(document.getElementById("progressChart").getContext("2d"), {
+      type: "line",
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: "Final Score",
+            data: scores,
+            fill: true,
+            tension: 0.4,
+            pointRadius: 5,
+            pointHoverRadius: 7,
+            borderColor: "#2563eb",
+            backgroundColor: "rgba(37,99,235,.1)",
+            borderWidth: 2,
+            pointBackgroundColor: "#2563eb",
+          },
+          {
+            label: "Target Band " + targetScore,
+            data: targetLine,
+            fill: false,
+            borderDash: [6, 4],
+            pointRadius: 0,
+            borderColor: "#f59e0b",
+            borderWidth: 2,
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { labels: { color: c.text, font: { family: 'Inter', size: 13 } } },
+          tooltip: {
+            callbacks: { label: function(ctx) { return ctx.dataset.label + ": " + ctx.raw; } }
+          }
+        },
+        scales: {
+          y: { min: 0, max: 9, grid: { color: c.grid }, ticks: { color: c.text } },
+          x: { grid: { color: c.grid }, ticks: { color: c.text } }
+        }
+      }
+    });
+  }
+
+  buildChart();
+
+  function toggleDark() {
+    var cur = document.documentElement.getAttribute('data-theme');
+    var next = cur === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+    updateThemeUI();
+    buildChart();
+  }
+  function updateThemeUI() {
+    var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+    document.getElementById('themeIcon').textContent = dark ? '☀️' : '🌙';
+    document.getElementById('themeLabel').textContent = dark ? 'Light Mode' : 'Dark Mode';
+  }
+  updateThemeUI();
+  document.querySelectorAll('.nav-item[data-path]').forEach(function(el) {
+    if (el.getAttribute('data-path') === window.location.pathname) el.classList.add('active');
+  });
+</script>
+</body>
+</html>

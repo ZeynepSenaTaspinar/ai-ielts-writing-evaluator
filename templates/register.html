@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register — IELTS AI</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  <script>
+    (function(){
+      var t = localStorage.getItem('theme') || 'light';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+</head>
+<body>
+<div class="auth-page">
+  <div class="auth-card">
+
+    <div class="auth-dark-row">
+      <button class="dark-toggle" onclick="toggleDark()" style="width:auto;">
+        <span class="toggle-icon" id="themeIcon">🌙</span>
+        <span id="themeLabel">Dark Mode</span>
+      </button>
+    </div>
+
+    <div class="auth-badge">✦ IELTS AI + ML</div>
+
+    <h1>Create Account</h1>
+    <p class="subtitle">Save your essays, track your progress, and set your target band score.</p>
+
+    <form method="POST">
+      <label>Username</label>
+      <input name="username" required placeholder="Choose a username" />
+
+      <label>Password</label>
+      <input name="password" type="password" required placeholder="Choose a password" />
+
+      <button type="submit" class="auth-submit">Create Account</button>
+    </form>
+
+    <p class="auth-footer">
+      Already have an account? <a href="/login">Login</a>
+    </p>
+  </div>
+</div>
+
+<script>
+  function toggleDark() {
+    var cur = document.documentElement.getAttribute('data-theme');
+    var next = cur === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+    updateThemeUI();
+  }
+  function updateThemeUI() {
+    var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+    document.getElementById('themeIcon').textContent = dark ? '☀️' : '🌙';
+    document.getElementById('themeLabel').textContent = dark ? 'Light Mode' : 'Dark Mode';
+  }
+  updateThemeUI();
+</script>
+</body>
+</html>

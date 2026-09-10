@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: ielts-writing-evaluator
+    runtime: python
+    plan: free
+    pythonVersion: "3.12.8"
+    buildCommand: pip install -r requirements.txt && python train_model.py
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 1 --timeout 180
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: GROQ_API_KEY
+        sync: false
+      - key: GROQ_MODEL
+        value: openai/gpt-oss-20b
+      - key: PYTHON_VERSION
+        value: "3.12.8"

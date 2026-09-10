@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>History — IELTS AI</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  <script>
+    (function(){
+      var t = localStorage.getItem('theme') || 'light';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+</head>
+<body>
+<div class="app-layout">
+
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-brand-inner">
+        <div class="sidebar-logo">AI</div>
+        <div>
+          <div class="sidebar-brand-text">IELTS AI</div>
+          <div class="sidebar-brand-sub">Writing Evaluator</div>
+        </div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a href="/" class="nav-item" data-path="/">
+        <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        Evaluator
+      </a>
+      <a href="/history" class="nav-item" data-path="/history">
+        <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        History
+      </a>
+      <a href="/progress" class="nav-item" data-path="/progress">
+        <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+        Progress
+      </a>
+      <a href="/research" class="nav-item" data-path="/research">
+        <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2v-4M9 21H5a2 2 0 0 1-2-2v-4m0 0h18"/></svg>
+        Research
+      </a>
+      <div class="nav-divider"></div>
+      <a href="/profile" class="nav-item" data-path="/profile">
+        <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        Profile
+      </a>
+      <a href="/logout" class="nav-item danger">
+        <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Logout
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="dark-toggle" onclick="toggleDark()">
+        <span class="toggle-icon" id="themeIcon">🌙</span>
+        <span id="themeLabel">Dark Mode</span>
+      </button>
+      <a href="/profile" class="sidebar-user-chip">
+        <div class="avatar-sm">{{ nav_username[0]|upper }}</div>
+        <span class="sidebar-username">{{ nav_username }}</span>
+      </a>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <div class="content-inner">
+
+      <div class="page-header">
+        <h1>Evaluation History</h1>
+        <p>Your previous IELTS writing evaluations.</p>
+      </div>
+
+      {% if data %}
+        {% for item in data %}
+        <div class="history-card">
+          <div class="history-card-header">
+            <div class="history-card-title">Evaluation #{{ item[0] }}</div>
+            <div class="score-chips">
+              <span class="score-chip">AI {{ item[2] }}</span>
+              <span class="score-chip">ML {{ item[3] }}</span>
+              <span class="score-chip final">{{ item[4] }}</span>
+            </div>
+          </div>
+          <p class="history-question">{{ item[1][:200] }}{% if item[1]|length > 200 %}…{% endif %}</p>
+          <div class="btn-row">
+            <a class="nav-btn" href="/evaluation/{{ item[0] }}">View Details</a>
+          </div>
+        </div>
+        {% endfor %}
+      {% else %}
+        <div class="card" style="text-align:center; padding: 48px; color: var(--text-2);">
+          <p style="font-size:36px; margin:0 0 12px;">📝</p>
+          <p style="font-size:16px; font-weight:600; margin:0 0 6px; color:var(--text);">No evaluations yet</p>
+          <p style="margin:0 0 20px; font-size:14px;">Submit your first essay to get started.</p>
+          <a href="/" class="nav-btn">Go to Evaluator</a>
+        </div>
+      {% endif %}
+
+    </div>
+  </main>
+</div>
+
+<script>
+  function toggleDark() {
+    var cur = document.documentElement.getAttribute('data-theme');
+    var next = cur === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+    updateThemeUI();
+  }
+  function updateThemeUI() {
+    var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+    document.getElementById('themeIcon').textContent = dark ? '☀️' : '🌙';
+    document.getElementById('themeLabel').textContent = dark ? 'Light Mode' : 'Dark Mode';
+  }
+  updateThemeUI();
+  document.querySelectorAll('.nav-item[data-path]').forEach(function(el) {
+    if (el.getAttribute('data-path') === window.location.pathname) el.classList.add('active');
+  });
+</script>
+</body>
+</html>

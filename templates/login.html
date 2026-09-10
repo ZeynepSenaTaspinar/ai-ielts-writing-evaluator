@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login — IELTS AI</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  <script>
+    (function(){
+      var t = localStorage.getItem('theme') || 'light';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+</head>
+<body>
+<div class="auth-page">
+  <div class="auth-card">
+
+    <div class="auth-dark-row">
+      <button class="dark-toggle" onclick="toggleDark()" style="width:auto;">
+        <span class="toggle-icon" id="themeIcon">🌙</span>
+        <span id="themeLabel">Dark Mode</span>
+      </button>
+    </div>
+
+    <div class="auth-badge">✦ IELTS AI + ML</div>
+
+    <h1>Welcome Back</h1>
+    <p class="subtitle">Login to continue tracking your IELTS Writing progress.</p>
+
+    <form method="POST">
+      <label>Username</label>
+      <input name="username" required placeholder="Enter your username" />
+
+      <label>Password</label>
+      <input name="password" type="password" required placeholder="Enter your password" />
+
+      <button type="submit" class="auth-submit">Login</button>
+    </form>
+
+    <div class="demo-box">
+      <strong>Portfolio demo</strong>
+      <p>Username <code>demo</code> · Password <code>demo123</code></p>
+      <form method="POST" action="/login">
+        <input type="hidden" name="username" value="demo" />
+        <input type="hidden" name="password" value="demo123" />
+        <button type="submit" class="demo-btn">Try the demo account</button>
+      </form>
+    </div>
+
+    <p class="auth-footer">
+      Don't have an account? <a href="/register">Create one</a>
+    </p>
+  </div>
+</div>
+
+<script>
+  function toggleDark() {
+    var cur = document.documentElement.getAttribute('data-theme');
+    var next = cur === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+    updateThemeUI();
+  }
+  function updateThemeUI() {
+    var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+    document.getElementById('themeIcon').textContent = dark ? '☀️' : '🌙';
+    document.getElementById('themeLabel').textContent = dark ? 'Light Mode' : 'Dark Mode';
+  }
+  updateThemeUI();
+</script>
+</body>
+</html>
