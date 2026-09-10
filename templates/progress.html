@@ -122,9 +122,14 @@
 
 <script>
   const scores = {{ scores | tojson }};
-  const targetScore = {{ target_score | tojson }};
-  const labels = scores.map((_, i) => "Essay " + (i + 1));
-  const targetLine = scores.map(() => targetScore);
+  const targetScore = Number({{ target_score | tojson }});
+  const labels = (scores.length ? scores : [null]).map(function(_, i) {
+    return "Essay " + (i + 1);
+  });
+  if (labels.length < 2) labels.push("");
+  const scoreData = scores.slice();
+  while (scoreData.length < labels.length) scoreData.push(null);
+  const targetLine = labels.map(function() { return targetScore; });
 
   function getChartColors() {
     var dark = document.documentElement.getAttribute('data-theme') === 'dark';
@@ -133,6 +138,26 @@
       text: dark ? '#8b949e' : '#64748b',
     };
   }
+
+  var targetLinePlugin = {
+    id: "targetLine",
+    afterDraw: function(chart) {
+      var yAxis = chart.scales.y;
+      var xAxis = chart.scales.x;
+      if (!yAxis || !xAxis) return;
+      var y = yAxis.getPixelForValue(targetScore);
+      var ctx = chart.ctx;
+      ctx.save();
+      ctx.beginPath();
+      ctx.setLineDash([6, 4]);
+      ctx.strokeStyle = "#f59e0b";
+      ctx.lineWidth = 2;
+      ctx.moveTo(xAxis.left, y);
+      ctx.lineTo(xAxis.right, y);
+      ctx.stroke();
+      ctx.restore();
+    }
+  };
 
   var chart;
   function buildChart() {
@@ -145,7 +170,8 @@
         datasets: [
           {
             label: "Final Score",
-            data: scores,
+            data: scoreData,
+            spanGaps: true,
             fill: true,
             tension: 0.4,
             pointRadius: 5,
@@ -171,14 +197,20 @@
         plugins: {
           legend: { labels: { color: c.text, font: { family: 'Inter', size: 13 } } },
           tooltip: {
-            callbacks: { label: function(ctx) { return ctx.dataset.label + ": " + ctx.raw; } }
+            callbacks: {
+              label: function(ctx) {
+                if (ctx.raw === null || ctx.raw === undefined) return null;
+                return ctx.dataset.label + ": " + ctx.raw;
+              }
+            }
           }
         },
         scales: {
           y: { min: 0, max: 9, grid: { color: c.grid }, ticks: { color: c.text } },
           x: { grid: { color: c.grid }, ticks: { color: c.text } }
         }
-      }
+      },
+      plugins: [targetLinePlugin]
     });
   }
 
