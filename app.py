@@ -90,14 +90,18 @@ def get_db():
 
 @app.context_processor
 def inject_nav_user():
+    name = ""
     if current_user.is_authenticated:
         conn = get_db()
         c = conn.cursor()
         c.execute("SELECT username FROM users WHERE id=?", (current_user.id,))
         row = c.fetchone()
         conn.close()
-        return {"nav_username": row[0] if row else ""}
-    return {"nav_username": ""}
+        name = row[0] if row else ""
+    return {
+        "nav_username": name,
+        "nav_initial": (name[:1] or "U").upper(),
+    }
 
 
 def init_db():
@@ -159,7 +163,14 @@ class User(UserMixin):
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User(user_id)
+    conn = get_db()
+    c = conn.cursor()
+    c.execute("SELECT id FROM users WHERE id=?", (user_id,))
+    row = c.fetchone()
+    conn.close()
+    if row is None:
+        return None
+    return User(row[0])
 
 
 @app.route("/")
@@ -260,6 +271,10 @@ def profile():
 
     user = c.fetchone()
     conn.close()
+
+    if not user:
+        logout_user()
+        return redirect(url_for("login"))
 
     return render_template("profile.html", user=user)
 
